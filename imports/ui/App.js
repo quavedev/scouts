@@ -1,6 +1,4 @@
 import React from 'react';
-import {Hello} from './Hello';
-import {Info} from './Info';
 
 import gql from 'graphql-tag';
 import {useQuery} from '@apollo/react-hooks';
@@ -27,8 +25,6 @@ export const App = () => {
   return (
     <div>
       {welcome}
-      <Hello/>
-      <Info/>
     </div>
   );
 };
