@@ -1,0 +1,32 @@
+{
+  "name": "scouts",
+  "private": true,
+  "scripts": {
+    "start": "meteor run",
+    "test": "meteor test --once --driver-package meteortesting:mocha",
+    "test-app": "TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
+    "visualize": "meteor --production --extra-packages bundle-visualizer"
+  },
+  "dependencies": {
+    "@apollo/react-hooks": "^3.1.5",
+    "@babel/runtime": "^7.8.4",
+    "apollo-cache-inmemory": "^1.6.5",
+    "apollo-client": "^2.6.8",
+    "apollo-link-ddp": "^3.0.0",
+    "apollo-link-error": "^1.1.13",
+    "graphql": "^15.0.0",
+    "graphql-load": "^0.1.1",
+    "graphql-tag": "^2.10.3",
+    "graphql-tools": "^5.0.0",
+    "meteor-node-stubs": "^1.0.0",
+    "react": "^16.13.0",
+    "react-dom": "^16.13.0",
+    "simpl-schema": "^1.5.9"
+  },
+  "meteor": {
+    "mainModule": {
+      "client": "client/main.js",
+      "server": "server/main.js"
+    }
+  }
+}
