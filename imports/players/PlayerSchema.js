@@ -1,11 +1,10 @@
 import SimpleSchema from 'simpl-schema';
 import {
-  enumToTypeDef,
-  typeToSimpleSchema,
-  typeToTypeDef
+  enumToEnumDef,
+  typeToSimpleSchema, typeToDefs, typeToFragment
 } from "../pkgs/schemaHelpers";
 
-const PlayerPosition = {
+export const PlayerPosition = {
   GOLEIRO: {
     name: 'Goleiro',
   },
@@ -41,7 +40,8 @@ const PlayerType = {
   },
   birthday: {
     type: Date,
-    graphQLType: 'DateTime'
+    optional: true,
+    graphQLType: 'DateTime',
   },
   position: {
     type: String,
@@ -52,19 +52,27 @@ const PlayerType = {
 };
 
 export const PlayerSchema = new SimpleSchema(typeToSimpleSchema(PlayerType));
-
+export const PlayerFragments = {
+  Full: typeToFragment({name: 'Player', def: PlayerType})
+}
 export const PlayerTypeDef = `
-  ${typeToTypeDef({
+  ${typeToDefs({
   name: 'Player',
   def: PlayerType
 })}
-  ${enumToTypeDef({
+  ${enumToEnumDef({
   name: 'PlayerPosition',
   def: PlayerPosition
 })}
+
   type Query {  
     player(_id: ID!): Player
     players: [Player]
+  }
+  
+  type Mutation {  
+    savePlayer(player: PlayerInput!): Player
+    erasePlayer(_id: ID!): Player
   }
 `;
 console.log(`PlayersTypeDef`, PlayerTypeDef);
