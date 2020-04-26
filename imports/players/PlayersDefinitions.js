@@ -20,6 +20,3 @@ export const PlayerDefinition = createModelDefinition({
 });
 
 export const PlayerSchema = PlayerDefinition.toSimpleSchema();
-export const PlayerFragments = {
-  Full: PlayerDefinition.toGraphQLFragment(),
-};

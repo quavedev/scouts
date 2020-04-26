@@ -89,6 +89,11 @@ const v = result => {
   return result;
 };
 export const createModelDefinition = definition => {
+  const name = definition.name;
+  const nameCamelCase = getNameCamelCase(definition);
+  const pluralNameCamelCase = getPluralNameCamelCase(definition);
+  const pluralName = getPluralName(definition);
+
   const toSimpleSchema = () => {
     import SimpleSchema from 'simpl-schema';
 
@@ -97,20 +102,64 @@ export const createModelDefinition = definition => {
   const toGraphQLFragment = () => definitionToFragment(definition);
   const toGraphQLType = () => definitionToTypeDef(definition);
   const toGraphQLInput = () => definitionToInputDef(definition);
+  const fullFragment = toGraphQLFragment();
+
+  const fullFragmentName = `${name}Full`;
+  const graphQLOneQueryName = name;
+  const graphQLManyQueryName = pluralName;
+  const graphQLSaveMutationName = `Save${name}`;
+  const graphQLEraseMutationName = `Erase${name}`;
+  const graphQLOneQueryCamelCaseName = toCamelCase(graphQLOneQueryName);
+  const graphQLManyQueryCamelCaseName = toCamelCase(graphQLManyQueryName);
+  const graphQLSaveMutationCamelCaseName = toCamelCase(graphQLSaveMutationName);
+  const graphQLEraseMutationCamelCaseName = toCamelCase(
+    graphQLEraseMutationName
+  );
+
   const toGraphQLQueries = () => `
         type Query {
-          ${getNameCamelCase(definition)}(_id: ID!): ${definition.name}
-          ${getPluralNameCamelCase(definition)}: [${definition.name}]
+          ${graphQLOneQueryCamelCaseName}(_id: ID!): ${name}
+          ${graphQLManyQueryCamelCaseName}: [${name}]
         }      
       `;
   const toGraphQLMutations = () => `
         type Mutation {
-          save${definition.name}(${getNameCamelCase(definition)}: ${
-    definition.name
-  }Input!): ${definition.name}
-          erase${definition.name}(_id: ID!): ${definition.name}
+          ${graphQLSaveMutationCamelCaseName}(${nameCamelCase}: ${name}Input!): ${name}
+          ${graphQLEraseMutationCamelCaseName}(_id: ID!): ${name}
         }      
       `;
+  const toGraphQLOneQuery = () => `
+      query ${graphQLOneQueryName}($_id: ID!) {
+        ${graphQLOneQueryCamelCaseName}(_id: $_id) {
+          ...${fullFragmentName}
+        }
+      }
+      ${fullFragment}
+    `;
+  const toGraphQLManyQuery = () => `
+      query ${graphQLManyQueryName} {
+        ${graphQLManyQueryCamelCaseName} {
+          ...${fullFragmentName}
+        }
+      }
+      ${fullFragment}
+    `;
+  const toGraphQLSaveMutation = () => `
+      mutation ${graphQLSaveMutationName}($${nameCamelCase}: ${name}Input!) {
+        save${name}(${nameCamelCase}: $${nameCamelCase}) {
+          ...${fullFragmentName}
+        }
+      }
+      ${fullFragment}
+    `;
+  const toGraphQLEraseMutation = () => `
+      mutation ${graphQLEraseMutationName}($_id: ID!) {
+        ${graphQLEraseMutationCamelCaseName}(_id: $_id) {
+          ...${fullFragmentName}
+        }
+      }
+      ${fullFragment}
+    `;
   const toGraphQL = () =>
     v(`    
         ${toGraphQLType(definition)}
@@ -121,6 +170,19 @@ export const createModelDefinition = definition => {
   `);
   return {
     definition,
+    name,
+    pluralName,
+    nameCamelCase,
+    pluralNameCamelCase,
+    fullFragmentName,
+    graphQLOneQueryName,
+    graphQLManyQueryName,
+    graphQLSaveMutationName,
+    graphQLEraseMutationName,
+    graphQLOneQueryCamelCaseName,
+    graphQLManyQueryCamelCaseName,
+    graphQLSaveMutationCamelCaseName,
+    graphQLEraseMutationCamelCaseName,
     toSimpleSchema,
     toGraphQLFragment,
     toGraphQLType,
@@ -128,6 +190,10 @@ export const createModelDefinition = definition => {
     toGraphQLQueries,
     toGraphQLMutations,
     toGraphQL,
+    toGraphQLManyQuery,
+    toGraphQLOneQuery,
+    toGraphQLSaveMutation,
+    toGraphQLEraseMutation,
   };
 };
 

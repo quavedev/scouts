@@ -1,14 +1,11 @@
 import { createCollection } from 'meteor/quave:collections';
-import { PlayerSchema } from './PlayerSchema';
-import { editable } from '../pkgs/editable';
+import { resolvable } from 'meteor/quave:resolvers';
 
+import { PlayerSchema, PlayerDefinition } from './PlayersDefinitions';
+
+// TODO accept definition from quave:definitions here
 export const PlayersCollection = createCollection({
-  name: 'players',
+  name: PlayerDefinition.pluralNameCamelCase,
   schema: PlayerSchema,
-  composers: [editable],
-});
-
-PlayersCollection.insert({
-  name: `Filipe ${new Date().getMilliseconds()}`,
-  birthday: new Date(),
+  composers: [resolvable],
 });
