@@ -81,6 +81,7 @@ export const App = () => {
   if (loading) {
     return 'loading...';
   }
+
   return (
     <div>
       {players.map(player => (

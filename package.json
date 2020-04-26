@@ -25,7 +25,7 @@
     "simpl-schema": "^1.5.9"
   },
   "devDependencies": {
-    "@quave/eslint-config-quave": "^1.0.0"
+    "@quave/eslint-config-quave": "^1.0.1-beta.0"
   },
   "eslintConfig": {
     "extends": [
