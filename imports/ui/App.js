@@ -105,11 +105,13 @@ export const App = () => {
                   value={position}
                 >
                   <option>select</option>
-                  {Object.entries(PlayerPosition).map(([key, { name }]) => (
-                    <option key={key} value={key}>
-                      {name}
-                    </option>
-                  ))}
+                  {Object.entries(PlayerPosition).map(
+                    ([key, { name: optionName }]) => (
+                      <option key={key} value={key}>
+                        {optionName}
+                      </option>
+                    )
+                  )}
                 </select>
               </div>
               <div>

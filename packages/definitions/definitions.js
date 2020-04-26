@@ -81,7 +81,9 @@ const getPluralNameCamelCase = definition =>
 
 const v = result => {
   if (isVerbose) {
+    // eslint-disable-next-line no-console
     console.log(PACKAGE_NAME);
+    // eslint-disable-next-line no-console
     console.log(result);
   }
   return result;
@@ -130,14 +132,12 @@ export const createModelDefinition = definition => {
 };
 
 export const createEnumDefinition = definition => {
+  const allowedValues = () => Object.keys(definition.options);
   const toSimpleSchemaField = () => ({
     type: String,
     allowedValues: allowedValues(),
     graphQLType: definition.name,
   });
-  const allowedValues = () => {
-    return Object.keys(definition.options);
-  };
   const toGraphQLEnum = () => definitionToEnumDef(definition);
   const toGraphQL = () => v(toGraphQLEnum(definition));
   const toEnum = () => definition.options;

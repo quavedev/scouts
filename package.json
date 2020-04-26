@@ -3,9 +3,10 @@
   "private": true,
   "scripts": {
     "start": "meteor run",
-    "test": "meteor test --once --driver-package meteortesting:mocha",
-    "test-app": "TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
-    "visualize": "meteor --production --extra-packages bundle-visualizer"
+    "test": "exit 0",
+    "quave-eslint": "eslint . --fix",
+    "quave-prettier": "prettier --write \"**/*.js\"",
+    "quave-check": "npm run quave-eslint && npm run quave-prettier"
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
@@ -24,11 +25,24 @@
     "simpl-schema": "^1.5.9"
   },
   "devDependencies": {
-    "@quave/eslint-config-quave": "^1.0.0-beta.0"
+    "@quave/eslint-config-quave": "^1.0.0-beta.2"
   },
   "eslintConfig": {
     "extends": [
       "@quave/quave"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "meteor yarn test && lint-staged",
+      "post-commit": "git update-index --again"
+    }
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "prettier --write",
+      "git add"
     ]
   },
   "meteor": {
