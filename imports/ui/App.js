@@ -1,9 +1,9 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 
 import gql from 'graphql-tag';
-import {useQuery} from '@apollo/react-hooks';
-import {useMutation} from '@apollo/react-hooks';
-import {PlayerFragments, PlayerPosition} from "../players/PlayerSchema";
+import { useQuery, useMutation } from '@apollo/react-hooks';
+import { PlayerFragments } from '../players/PlayerSchema';
+import { PlayerPosition } from '../players/PlayerPositionEnum';
 
 const playersQuery = gql`
   query Players {
@@ -31,7 +31,7 @@ const erasePlayerMutation = gql`
 `;
 
 export const App = () => {
-  const {loading, error, data} = useQuery(playersQuery);
+  const { loading, error, data } = useQuery(playersQuery);
 
   const [_id, setId] = useState(null);
   const [name, setName] = useState('');
@@ -40,64 +40,88 @@ export const App = () => {
   const [savePlayer] = useMutation(savePlayerMutation);
   const [erasePlayer] = useMutation(erasePlayerMutation);
 
-  const {players} = data || {players: []};
+  const { players } = data || { players: [] };
 
-  const edit = (player) => {
-    setId(player._id)
-    setName(player.name)
-    setPosition(player.position || undefined)
-  }
+  const edit = player => {
+    setId(player._id);
+    setName(player.name);
+    setPosition(player.position || undefined);
+  };
   const save = () => {
     savePlayer({
       variables: {
         player: {
           _id,
           name,
-          position
-        }
-      }
+          position,
+        },
+      },
     }).then(() => {
       setId(null);
       setName('');
       setPosition(undefined);
     });
-  }
+  };
   const erase = () => {
     erasePlayer({
       variables: {
-        _id
+        _id,
       },
-      refetchQueries: () => ['Players']
+      refetchQueries: () => ['Players'],
     }).then(() => {
       setId(null);
       setName('');
       setPosition(undefined);
     });
-  }
+  };
 
-  if(error) {
+  if (error) {
     return 'ops, broken!';
   }
-  if(loading) {
+  if (loading) {
     return 'loading...';
   }
   return (
     <div>
-      {players.map(player => <div onClick={() => edit(player)} key={player._id}>
-        <div>{player.name}{player.position && ` / ${PlayerPosition[player.position].name}`} (edit)</div>
-        {_id === player._id && <>
-          <div><input onChange={({target: {value}}) => setName(value)}
-                      value={name}/></div>
-          <div><select onChange={({target: {value}}) => setPosition(value)}
-                       value={position}>
-            <option>select</option>
-            {Object.entries(PlayerPosition).map(([key, {name}]) => <option
-              key={key} value={key}>{name}</option>)}
-          </select></div>
-          <div><span onClick={save}>Save</span></div>
-          <div><span onClick={erase}>Erase</span></div>
-        </>}
-      </div>)}
+      {players.map(player => (
+        <div onClick={() => edit(player)} key={player._id}>
+          <div>
+            {player.name}
+            {player.position &&
+              ` / ${PlayerPosition[player.position].name}`}{' '}
+            (edit)
+          </div>
+          {_id === player._id && (
+            <>
+              <div>
+                <input
+                  onChange={({ target: { value } }) => setName(value)}
+                  value={name}
+                />
+              </div>
+              <div>
+                <select
+                  onChange={({ target: { value } }) => setPosition(value)}
+                  value={position}
+                >
+                  <option>select</option>
+                  {Object.entries(PlayerPosition).map(([key, { name }]) => (
+                    <option key={key} value={key}>
+                      {name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <span onClick={save}>Save</span>
+              </div>
+              <div>
+                <span onClick={erase}>Erase</span>
+              </div>
+            </>
+          )}
+        </div>
+      ))}
     </div>
   );
 };

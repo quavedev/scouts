@@ -23,6 +23,14 @@
     "react-dom": "^16.13.0",
     "simpl-schema": "^1.5.9"
   },
+  "devDependencies": {
+    "@quave/eslint-config-quave": "^1.0.0-beta.0"
+  },
+  "eslintConfig": {
+    "extends": [
+      "@quave/quave"
+    ]
+  },
   "meteor": {
     "mainModule": {
       "client": "client/main.js",

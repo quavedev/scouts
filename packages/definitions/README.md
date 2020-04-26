@@ -1,0 +1,4 @@
+- pluralName
+- fields
+  - graphQLType
+  - graphQLOptionalInput
