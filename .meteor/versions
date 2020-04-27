@@ -51,7 +51,7 @@ mongo-id@1.0.7
 npm-mongo@3.7.0
 ordered-dict@1.1.0
 promise@0.11.2
-quave:collections@0.0.2
+quave:collections@0.0.4-beta.1
 quave:definitions@0.0.1
 quave:graphql@0.0.1
 quave:resolvers@0.0.1

@@ -2,9 +2,12 @@ import React from 'react';
 import { Meteor } from 'meteor/meteor';
 import { render } from 'react-dom';
 import { App } from '/imports/ui/App';
-import { startGraphQLClient } from 'meteor/quave:graphql/client';
+import { startGraphQLClient } from 'meteor/quave:graphql';
 
 import { ApolloProvider } from '@apollo/react-hooks';
+import { DateTimeType } from '../imports/pkgs/DateTimeType';
+
+DateTimeType.register();
 
 const apolloClient = startGraphQLClient({ connectToDevTools: true });
 
