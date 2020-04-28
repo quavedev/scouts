@@ -1,8 +1,10 @@
 /* eslint-disable class-methods-use-this */
-import { TypeDef } from 'meteor/quave:collections/TypeDef';
+import SimpleSchema from 'simpl-schema';
+
+import { CustomType } from 'meteor/quave:collections/CustomType';
 import { DateTime } from './DateTime';
 
-class _DateTimeType extends TypeDef {
+class _DateTimeType extends CustomType {
   name() {
     return 'DateTime';
   }
@@ -15,8 +17,12 @@ class _DateTimeType extends TypeDef {
     return dateTime.toDate();
   }
 
-  doFromPersisted(time) {
-    return new DateTime(time);
+  doFromPersisted(date) {
+    return new DateTime(date.getTime());
+  }
+
+  toSimpleSchema() {
+    return new SimpleSchema({ ms: SimpleSchema.Integer });
   }
 
   fromJSONValue(time) {

@@ -4,7 +4,6 @@ import gql from 'graphql-tag';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { PlayerDefinition } from '../players/PlayersDefinitions';
 import { PlayerPosition } from '../players/PlayerPositionEnum';
-import { DateTime } from '../pkgs/DateTime';
 
 const PlayerForm = ({
   name,
@@ -57,10 +56,8 @@ const Players = () => {
     gql`
       ${PlayerDefinition.toGraphQLOneQuery()}
     `,
-    { variables: { _id: 'zqPqBidiRTuEcCcFH' } }
+    { variables: { _id: 'QD7AC9ZoQZE2CtWCJ' } }
   );
-  // eslint-disable-next-line no-console
-  console.log('playerData', playerData);
 
   const [_id, setId] = useState(null);
   const [name, setName] = useState('');
@@ -75,6 +72,11 @@ const Players = () => {
   `);
 
   const { players } = data || { players: [] };
+
+  // eslint-disable-next-line no-console
+  console.log('playerData', playerData);
+  // eslint-disable-next-line no-console
+  console.log('players', players);
 
   const cancel = () => {
     setId(null);
@@ -176,57 +178,4 @@ const Players = () => {
   );
 };
 
-const today = new DateTime();
-
-export const App = () => {
-  const nowQuery = useQuery(gql`
-    query Now {
-      now {
-        dateTime
-      }
-    }
-  `);
-  const { data: { now: { dateTime } = {} } = {} } = nowQuery;
-  if (dateTime) {
-    console.log(`plain`, dateTime.toDate());
-  }
-  const dateTimeQuery = useQuery(
-    gql`
-      query LogDateTime($dateTime: DateTime!) {
-        logDateTime(dateTime: $dateTime) {
-          dateTime
-        }
-      }
-    `,
-    {
-      variables: { dateTime: today },
-    }
-  );
-  const {
-    data: { logDateTime: { dateTime: dateTimeFromLog } = {} } = {},
-  } = dateTimeQuery;
-  if (dateTimeFromLog) {
-    console.log(`param`, dateTimeFromLog.toDate());
-  }
-
-  const logNowQuery = useQuery(
-    gql`
-      query LogNow($now: NowInput!) {
-        logNow(now: $now) {
-          dateTime
-        }
-      }
-    `,
-    {
-      variables: { now: { dateTime: today } },
-    }
-  );
-  const {
-    data: { logNow: { dateTime: dateTimeFromLogNow } = {} } = {},
-  } = logNowQuery;
-  if (dateTimeFromLogNow) {
-    console.log(`input`, dateTimeFromLogNow.toDate());
-  }
-
-  return <Players />;
-};
+export const App = () => <Players />;

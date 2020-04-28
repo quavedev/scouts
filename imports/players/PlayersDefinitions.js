@@ -1,5 +1,6 @@
 import { createModelDefinition } from 'meteor/quave:definitions';
 import { PlayerPositionDefinition } from './PlayerPositionEnum';
+import { DateTimeType } from '../pkgs/DateTimeType';
 
 export const PlayerDefinition = createModelDefinition({
   name: 'Player',
@@ -8,9 +9,8 @@ export const PlayerDefinition = createModelDefinition({
       type: String,
     },
     birthday: {
-      type: Date,
+      type: DateTimeType,
       optional: true,
-      graphQLType: 'DateTime',
     },
     position: {
       ...PlayerPositionDefinition.toSimpleSchemaField(),

@@ -1,17 +1,16 @@
-import { EJSONType } from './EJSONType';
+import { EJSONType } from 'meteor/quave:collections/EJSONType';
 
 export class DateTime extends EJSONType {
-  constructor(time = new Date().getTime()) {
+  constructor(time) {
     super();
-    this.time = time;
-    this.date = new Date(time);
+    this.ms = time || new Date().getTime();
   }
 
   toJSONValue() {
-    return this.time;
+    return this.ms;
   }
 
   toDate() {
-    return this.date;
+    return new Date(this.ms);
   }
 }

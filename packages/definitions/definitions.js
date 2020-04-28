@@ -5,7 +5,7 @@ const settings = getSettings({ packageName: PACKAGE_NAME });
 
 const { isVerbose } = settings;
 
-const getType = value => {
+const getTypeName = value => {
   if (value.graphQLType) {
     return value.graphQLType;
   }
@@ -13,7 +13,9 @@ const getType = value => {
     return value.type;
   }
   if (value.type.name) {
-    return value.type.name;
+    return typeof value.type.name === 'function'
+      ? value.type.name()
+      : value.type.name;
   }
   const stringType = value.type.toString();
   if (stringType === 'SimpleSchema.Integer') {
@@ -29,7 +31,7 @@ const getFieldsDefinitions = ({ fields, isInput = false }) =>
     .map(([key, value]) => {
       const isOptional =
         value.optional || (isInput && value.graphQLOptionalInput) ? '' : '!';
-      return `${key}: ${getType(value)}${isOptional}`;
+      return `${key}: ${getTypeName(value)}${isOptional}`;
     })
     .join('\n  ');
 
@@ -63,9 +65,20 @@ const definitionToFragment = ({
 // removes fields that are not part of SimpleSchema
 const definitionToSimpleSchema = definition =>
   Object.entries(definition.fields).reduce(
-    (acc, [fieldName, { graphQLType, graphQLOptionalInput, ...item }]) => ({
+    (
+      acc,
+      [
+        fieldName,
+        { graphQLType, graphQLOptionalInput, typeName, customType, ...item },
+      ]
+    ) => ({
       ...acc,
-      [fieldName]: item,
+      [fieldName]: {
+        ...item,
+        ...(item.type.toSimpleSchema
+          ? { type: item.type.toSimpleSchema() }
+          : {}),
+      },
     }),
     {}
   );
@@ -168,8 +181,19 @@ export const createModelDefinition = definition => {
         ${toGraphQLQueries(definition)}
         ${toGraphQLMutations(definition)}
   `);
+  const fields = Object.entries(definition.fields).reduce(
+    (acc, [key, value]) => ({
+      ...acc,
+      [key]: Object.assign(value, {
+        typeName: getTypeName(value),
+        customType: value.type,
+      }),
+    }),
+    {}
+  );
   return {
-    definition,
+    rawDefinition: definition,
+    fields,
     name,
     pluralName,
     nameCamelCase,
@@ -199,16 +223,26 @@ export const createModelDefinition = definition => {
 
 export const createEnumDefinition = definition => {
   const allowedValues = () => Object.keys(definition.options);
+  const name = definition.name;
   const toSimpleSchemaField = () => ({
     type: String,
     allowedValues: allowedValues(),
-    graphQLType: definition.name,
+    graphQLType: name,
   });
   const toGraphQLEnum = () => definitionToEnumDef(definition);
   const toGraphQL = () => v(toGraphQLEnum(definition));
-  const toEnum = () => definition.options;
+  const toEnum = () =>
+    Object.entries(definition.options).reduce(
+      (acc, [key, value]) => ({
+        ...acc,
+        [key]: { ...value, value: key },
+      }),
+      {}
+    );
   return {
-    definition,
+    rawDefinition: definition,
+    options: definition.options,
+    name,
     allowedValues,
     toSimpleSchemaField,
     toGraphQLEnum,
