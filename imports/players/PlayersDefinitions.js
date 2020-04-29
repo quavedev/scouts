@@ -1,6 +1,6 @@
 import { createModelDefinition } from 'meteor/quave:definitions';
+import { DateTimeType } from 'meteor/quave:custom-type-date-time/DateTimeType';
 import { PlayerPositionDefinition } from './PlayerPositionEnum';
-import { DateTimeType } from '../pkgs/DateTimeType';
 
 export const PlayerDefinition = createModelDefinition({
   name: 'Player',

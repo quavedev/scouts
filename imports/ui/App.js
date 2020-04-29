@@ -2,14 +2,17 @@ import React, { useState } from 'react';
 
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from '@apollo/react-hooks';
+import { DateTime } from 'meteor/quave:custom-type-date-time/DateTime';
 import { PlayerDefinition } from '../players/PlayersDefinitions';
 import { PlayerPosition } from '../players/PlayerPositionEnum';
 
 const PlayerForm = ({
   name,
-  position,
   setName,
+  position,
   setPosition,
+  birthday,
+  setBirthday,
   save,
   erase,
   cancel,
@@ -19,6 +22,13 @@ const PlayerForm = ({
       <input
         onChange={({ target: { value } }) => setName(value)}
         value={name}
+      />
+    </div>
+    <div>
+      <input
+        type="date"
+        onChange={({ target: { value } }) => setBirthday(value)}
+        value={birthday}
       />
     </div>
     <div>
@@ -61,6 +71,7 @@ const Players = () => {
 
   const [_id, setId] = useState(null);
   const [name, setName] = useState('');
+  const [birthday, setBirthday] = useState(undefined);
   const [position, setPosition] = useState(undefined);
   const [isCreating, setIsCreating] = useState(false);
 
@@ -81,6 +92,7 @@ const Players = () => {
   const cancel = () => {
     setId(null);
     setName('');
+    setBirthday(undefined);
     setPosition(undefined);
     setIsCreating(false);
   };
@@ -89,6 +101,7 @@ const Players = () => {
     cancel();
     setId(player._id);
     setName(player.name);
+    setBirthday(player.birthday.formatDate());
     setPosition(player.position || undefined);
   };
 
@@ -101,6 +114,7 @@ const Players = () => {
     const player = {
       _id,
       name,
+      birthday: DateTime.parseDate(birthday),
       position,
     };
 
@@ -119,9 +133,7 @@ const Players = () => {
       },
       refetchQueries: () => [PlayerDefinition.graphQLManyQueryName],
     }).then(() => {
-      setId(null);
-      setName('');
-      setPosition(undefined);
+      cancel();
     });
   };
 
@@ -145,35 +157,53 @@ const Players = () => {
             position={position}
             setName={setName}
             setPosition={setPosition}
+            birthday={birthday}
+            setBirthday={setBirthday}
             isCreating={isCreating}
             save={save}
             cancel={cancel}
           />
         )}
       </div>
-      {players.map(player => (
-        <div key={player._id}>
-          <div>
-            {player.name}
-            {player.position && ` / ${PlayerPosition[player.position].name}`} (
-            <button onClick={() => edit(player)} key={player._id}>
-              edit
-            </button>
-            )
+      {players.map(player => {
+        const yearsOld =
+          player.birthday &&
+          Number.parseInt(
+            (new Date().getTime() - player.birthday.ms) /
+              1000 /
+              60 /
+              60 /
+              24 /
+              365,
+            10
+          );
+        return (
+          <div key={player._id}>
+            <div>
+              {player.name}
+              {player.position && ` / ${PlayerPosition[player.position].name}`}
+              {!!yearsOld && ` / ${yearsOld} years old`} (
+              <button onClick={() => edit(player)} key={player._id}>
+                edit
+              </button>
+              )
+            </div>
+            {_id === player._id && (
+              <PlayerForm
+                name={name}
+                setName={setName}
+                position={position}
+                setPosition={setPosition}
+                birthday={birthday}
+                setBirthday={setBirthday}
+                save={save}
+                cancel={cancel}
+                erase={erase}
+              />
+            )}
           </div>
-          {_id === player._id && (
-            <PlayerForm
-              name={name}
-              position={position}
-              setName={setName}
-              setPosition={setPosition}
-              save={save}
-              cancel={cancel}
-              erase={erase}
-            />
-          )}
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };

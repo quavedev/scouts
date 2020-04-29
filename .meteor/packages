@@ -25,3 +25,4 @@ quave:collections
 quave:definitions
 quave:resolvers
 matb33:collection-hooks
+quave:custom-type-date-time

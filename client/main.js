@@ -5,7 +5,7 @@ import { App } from '/imports/ui/App';
 import { startGraphQLClient } from 'meteor/quave:graphql';
 
 import { ApolloProvider } from '@apollo/react-hooks';
-import { DateTimeType } from '../imports/pkgs/DateTimeType';
+import { DateTimeType } from 'meteor/quave:custom-type-date-time/DateTimeType';
 
 DateTimeType.register();
 
