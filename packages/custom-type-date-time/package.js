@@ -1,6 +1,6 @@
 Package.describe({
   name: 'quave:custom-type-date-time',
-  version: '0.0.1',
+  version: '1.0.0',
   summary: 'DateTime custom type for EJSON compatible with GraphQL and MongoDB',
   git: 'https://github.com/quavedev/custom-type-date-time',
 });

@@ -235,7 +235,8 @@ export const createEnumDefinition = definition => {
     Object.entries(definition.options).reduce(
       (acc, [key, value]) => ({
         ...acc,
-        [key]: { ...value, value: key },
+        // to keep methods in the object
+        [key]: Object.assign(value, { value: key }),
       }),
       {}
     );
