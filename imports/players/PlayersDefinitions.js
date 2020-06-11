@@ -18,5 +18,3 @@ export const PlayerDefinition = createModelDefinition({
     },
   },
 });
-
-export const PlayerSchema = PlayerDefinition.toSimpleSchema();

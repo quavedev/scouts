@@ -17,7 +17,6 @@ startGraphQLServer({
   resolvers: [
     DateTimeResolver,
     createResolvers({
-      definition: PlayerDefinition,
       collection: PlayersCollection,
     }),
   ],
