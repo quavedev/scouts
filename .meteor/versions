@@ -55,6 +55,7 @@ promise@0.11.2
 quave:collections@1.0.0
 quave:custom-type-date-time@1.0.1
 quave:definitions@1.0.0
+quave:forms@0.0.1
 quave:graphql@1.0.0
 quave:resolvers@1.0.1
 quave:settings@1.0.0

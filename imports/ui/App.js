@@ -3,60 +3,10 @@ import React, { useState } from 'react';
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { DateTime } from 'meteor/quave:custom-type-date-time/DateTime';
+import { Form } from 'meteor/quave:forms';
+import { Field } from 'formik';
 import { PlayerDefinition } from '../players/PlayersDefinitions';
 import { PlayerPosition } from '../players/PlayerPositionEnum';
-
-const PlayerForm = ({
-  name,
-  setName,
-  position,
-  setPosition,
-  birthday,
-  setBirthday,
-  save,
-  erase,
-  cancel,
-}) => (
-  <>
-    <div>
-      <input
-        onChange={({ target: { value } }) => setName(value)}
-        value={name}
-      />
-    </div>
-    <div>
-      <input
-        type="date"
-        onChange={({ target: { value } }) => setBirthday(value)}
-        value={birthday}
-      />
-    </div>
-    <div>
-      <select
-        onChange={({ target: { value } }) => setPosition(value)}
-        value={position}
-      >
-        <option>select</option>
-        {Object.entries(PlayerPosition).map(([key, { name: optionName }]) => (
-          <option key={key} value={key}>
-            {optionName}
-          </option>
-        ))}
-      </select>
-    </div>
-    <div>
-      <button onClick={save}>Save</button>
-    </div>
-    {erase && (
-      <div>
-        <button onClick={erase}>Erase</button>
-      </div>
-    )}
-    <div>
-      <button onClick={cancel}>Cancel</button>
-    </div>
-  </>
-);
 
 const Players = () => {
   const { loading, error, data } = useQuery(gql`
@@ -99,6 +49,9 @@ const Players = () => {
 
   const edit = player => {
     cancel();
+    if (_id === player._id) {
+      return;
+    }
     setId(player._id);
     setName(player.name);
     setBirthday(player.birthday.formatDate());
@@ -110,12 +63,12 @@ const Players = () => {
     setIsCreating(true);
   };
 
-  const save = () => {
+  const save = values => {
     const player = {
       _id,
-      name,
-      birthday: DateTime.parseDate(birthday),
-      position,
+      name: values.name,
+      birthday: DateTime.parseDate(values.birthday),
+      position: values.position,
     };
 
     savePlayer({
@@ -144,25 +97,45 @@ const Players = () => {
     return 'loading...';
   }
 
+  const typeToComponent = (fieldName, fieldDefinition) => {
+    if (fieldDefinition.typeName === 'DateTime') {
+      return (
+        <>
+          <div>{fieldDefinition.label}</div>
+          <Field type="date" name={fieldName} />
+        </>
+      );
+    }
+
+    return null;
+  };
+
+  const PlayerForm = ({ initialValues, editing = false }) => (
+    <div style={{ width: 400 }}>
+      <Form
+        className="form"
+        onSubmit={save}
+        initialValues={initialValues}
+        submitLabel="SAVE"
+        typeToComponent={typeToComponent}
+        definition={PlayerDefinition}
+        actionButtons={[
+          ...(editing ? [{ label: 'ERASE', handler: erase }] : []),
+          { label: 'CANCEL', handler: cancel },
+        ]}
+      />
+    </div>
+  );
+
   return (
     <div>
       <div>Players</div>
       <div>
         <button onClick={create}>New</button>
       </div>
-      <div>
+      <div style={{ width: 400 }}>
         {isCreating && (
-          <PlayerForm
-            name={name}
-            position={position}
-            setName={setName}
-            setPosition={setPosition}
-            birthday={birthday}
-            setBirthday={setBirthday}
-            isCreating={isCreating}
-            save={save}
-            cancel={cancel}
-          />
+          <PlayerForm initialValues={{ name, position, birthday }} />
         )}
       </div>
       {players.map(player => {
@@ -190,15 +163,11 @@ const Players = () => {
             </div>
             {_id === player._id && (
               <PlayerForm
-                name={name}
-                setName={setName}
-                position={position}
-                setPosition={setPosition}
-                birthday={birthday}
-                setBirthday={setBirthday}
-                save={save}
-                cancel={cancel}
-                erase={erase}
+                editing
+                initialValues={{
+                  ...player,
+                  birthday: player.birthday.formatDate(),
+                }}
               />
             )}
           </div>
