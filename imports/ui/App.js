@@ -1,29 +1,24 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { DateTime } from 'meteor/quave:custom-type-date-time/DateTime';
-import { Form } from 'meteor/quave:forms';
+import { Table } from 'meteor/quave:forms';
 import { Field } from 'formik';
 import { PlayerDefinition } from '../players/PlayersDefinitions';
-import { PlayerPosition } from '../players/PlayerPositionEnum';
 
 const Players = () => {
   const { loading, error, data } = useQuery(gql`
     ${PlayerDefinition.toGraphQLManyQuery()}
   `);
-  const { data: { player: playerData } = {} } = useQuery(
-    gql`
-      ${PlayerDefinition.toGraphQLOneQuery()}
-    `,
-    { variables: { _id: 'QD7AC9ZoQZE2CtWCJ' } }
-  );
 
-  const [_id, setId] = useState(null);
-  const [name, setName] = useState('');
-  const [birthday, setBirthday] = useState(undefined);
-  const [position, setPosition] = useState(undefined);
-  const [isCreating, setIsCreating] = useState(false);
+  // Getting an specific player
+  // const { data: { player: playerData } = {} } = useQuery(
+  //   gql`
+  //     ${PlayerDefinition.toGraphQLOneQuery()}
+  //   `,
+  //   { variables: { _id: 'QD7AC9ZoQZE2CtWCJ' } }
+  // );
 
   const [savePlayer] = useMutation(gql`
     ${PlayerDefinition.toGraphQLSaveMutation()}
@@ -32,43 +27,23 @@ const Players = () => {
     ${PlayerDefinition.toGraphQLEraseMutation()}
   `);
 
-  const { players } = data || { players: [] };
+  const { players: playersRaw } = data || { players: [] };
+  const players = playersRaw.map(player =>
+    Object.fromEntries(
+      Object.entries(player).map(([key, value]) => {
+        if (key === 'birthday') {
+          return [key, value.formatDate()];
+        }
 
-  // eslint-disable-next-line no-console
-  console.log('playerData', playerData);
-  // eslint-disable-next-line no-console
-  console.log('players', players);
+        return [key, value];
+      })
+    )
+  );
 
-  const cancel = () => {
-    setId(null);
-    setName('');
-    setBirthday(undefined);
-    setPosition(undefined);
-    setIsCreating(false);
-  };
-
-  const edit = player => {
-    cancel();
-    if (_id === player._id) {
-      return;
-    }
-    setId(player._id);
-    setName(player.name);
-    setBirthday(player.birthday.formatDate());
-    setPosition(player.position || undefined);
-  };
-
-  const create = () => {
-    cancel();
-    setIsCreating(true);
-  };
-
-  const save = values => {
+  const save = ({ __typename, ...values }) => {
     const player = {
-      _id,
-      name: values.name,
+      ...values,
       birthday: DateTime.parseDate(values.birthday),
-      position: values.position,
     };
 
     savePlayer({
@@ -76,17 +51,15 @@ const Players = () => {
         player,
       },
       refetchQueries: () => [PlayerDefinition.graphQLManyQueryName],
-    }).then(() => cancel());
+    });
   };
 
-  const erase = () => {
+  const erase = values => {
     erasePlayer({
       variables: {
-        _id,
+        _id: values._id,
       },
       refetchQueries: () => [PlayerDefinition.graphQLManyQueryName],
-    }).then(() => {
-      cancel();
     });
   };
 
@@ -110,69 +83,24 @@ const Players = () => {
     return null;
   };
 
-  const PlayerForm = ({ initialValues, editing = false }) => (
-    <div style={{ width: 400 }}>
-      <Form
-        className="form"
-        onSubmit={save}
-        initialValues={initialValues}
-        submitLabel="SAVE"
-        typeToComponent={typeToComponent}
-        definition={PlayerDefinition}
-        actionButtons={[
-          ...(editing ? [{ label: 'ERASE', handler: erase }] : []),
-          { label: 'CANCEL', handler: cancel },
-        ]}
-      />
-    </div>
-  );
-
   return (
     <div>
-      <div>Players</div>
-      <div>
-        <button onClick={create}>New</button>
-      </div>
-      <div style={{ width: 400 }}>
-        {isCreating && (
-          <PlayerForm initialValues={{ name, position, birthday }} />
-        )}
-      </div>
-      {players.map(player => {
-        const yearsOld =
-          player.birthday &&
-          Number.parseInt(
-            (new Date().getTime() - player.birthday.ms) /
-              1000 /
-              60 /
-              60 /
-              24 /
-              365,
-            10
-          );
-        return (
-          <div key={player._id}>
-            <div>
-              {player.name}
-              {player.position && ` / ${PlayerPosition[player.position].name}`}
-              {!!yearsOld && ` / ${yearsOld} years old`} (
-              <button onClick={() => edit(player)} key={player._id}>
-                edit
-              </button>
-              )
-            </div>
-            {_id === player._id && (
-              <PlayerForm
-                editing
-                initialValues={{
-                  ...player,
-                  birthday: player.birthday.formatDate(),
-                }}
-              />
-            )}
-          </div>
-        );
-      })}
+      <h4>Players</h4>
+      <Table
+        definition={PlayerDefinition}
+        values={players}
+        onSubmit={save}
+        formProps={{
+          typeToComponent,
+          actionButtons: [
+            {
+              label: 'ERASE',
+              handler: erase,
+              shouldBeVisible: ({ _id }) => !!_id,
+            },
+          ],
+        }}
+      />
     </div>
   );
 };

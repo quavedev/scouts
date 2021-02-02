@@ -5,15 +5,15 @@ import { PlayerPositionDefinition } from './PlayerPositionEnum';
 export const PlayerDefinition = createModelDefinition({
   name: 'Player',
   fields: {
+    name: {
+      type: String,
+      label: 'Name',
+    },
     isActive: {
       type: Boolean,
       label: 'Is Active',
       defaultValue: false,
       optional: true,
-    },
-    name: {
-      type: String,
-      label: 'Name',
     },
     birthday: {
       type: DateTimeType,
