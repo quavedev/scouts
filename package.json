@@ -2,7 +2,7 @@
   "name": "scouts",
   "private": true,
   "scripts": {
-    "start": "meteor run",
+    "start": "meteor run --exclude-archs web.browser.legacy,web.cordova",
     "test": "exit 0",
     "quave-eslint": "eslint . --fix",
     "quave-prettier": "prettier --write \"**/*.js\"",

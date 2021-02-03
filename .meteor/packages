@@ -27,3 +27,5 @@ quave:resolvers
 matb33:collection-hooks
 quave:custom-type-date-time
 quave:forms
+hot-module-replacement
+dev-error-overlay
