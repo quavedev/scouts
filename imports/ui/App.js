@@ -27,18 +27,7 @@ const Players = () => {
     ${PlayerDefinition.toGraphQLEraseMutation()}
   `);
 
-  const { players: playersRaw } = data || { players: [] };
-  const players = playersRaw.map(player =>
-    Object.fromEntries(
-      Object.entries(player).map(([key, value]) => {
-        if (key === 'birthday') {
-          return [key, value.formatDate()];
-        }
-
-        return [key, value];
-      })
-    )
-  );
+  const { players } = data || { players: [] };
 
   const save = ({ __typename, ...values }) => {
     const player = {
@@ -70,7 +59,7 @@ const Players = () => {
     return 'loading...';
   }
 
-  const typeToComponent = (fieldName, fieldDefinition) => {
+  const definitionToComponent = (fieldDefinition, fieldName) => {
     if (fieldDefinition.typeName === 'DateTime') {
       return (
         <>
@@ -88,10 +77,17 @@ const Players = () => {
       <h4>Players</h4>
       <Table
         definition={PlayerDefinition}
-        values={players}
+        objects={players}
         onSubmit={save}
+        omitColumns={['__typename']}
+        transformBeforeUse={(fieldValue, fieldDefinition) => {
+          if (fieldDefinition?.typeName === 'DateTime') {
+            return fieldValue.formatDate();
+          }
+          return null;
+        }}
         formProps={{
-          typeToComponent,
+          definitionToComponent,
           actionButtons: [
             {
               label: 'ERASE',
