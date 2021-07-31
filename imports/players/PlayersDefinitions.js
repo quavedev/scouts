@@ -19,6 +19,7 @@ export const PlayerDefinition = createModelDefinition({
       type: DateTimeType,
       label: 'Birthday',
       optional: true,
+      custom() {},
     },
     position: {
       ...PlayerPositionDefinition.toSimpleSchemaField(),
