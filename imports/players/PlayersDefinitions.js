@@ -7,13 +7,23 @@ export const PlayerDefinition = createModelDefinition({
   fields: {
     name: {
       type: String,
+      label: 'Name',
+    },
+    isActive: {
+      type: Boolean,
+      label: 'Is Active',
+      defaultValue: false,
+      optional: true,
     },
     birthday: {
       type: DateTimeType,
+      label: 'Birthday',
       optional: true,
+      custom() {},
     },
     position: {
       ...PlayerPositionDefinition.toSimpleSchemaField(),
+      label: 'Position',
       optional: true,
     },
   },
