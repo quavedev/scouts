@@ -7,9 +7,11 @@ import { DateTimeDefinition } from 'meteor/quave:custom-type-date-time/DateTimeD
 import { PlayerPositionDefinition } from '../imports/players/PlayerPositionEnum';
 import { PlayersCollection } from '../imports/players/PlayersCollection';
 import { PlayerDefinition } from '../imports/players/PlayersDefinitions';
+import { commonTypeDefs } from 'meteor/quave:definitions/definitions';
 
 startGraphQLServer({
   typeDefs: [
+    commonTypeDefs,
     DateTimeDefinition,
     PlayerPositionDefinition.toGraphQL(),
     PlayerDefinition.toGraphQL(),
