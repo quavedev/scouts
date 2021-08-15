@@ -30,4 +30,3 @@ quave:crud
 quave:forms
 hot-module-replacement@0.3.0
 dev-error-overlay@0.1.1
-quave:crud

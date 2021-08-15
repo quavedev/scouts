@@ -1,5 +1,5 @@
 import { createCollection } from 'meteor/quave:collections';
-import { crudable } from 'meteor/quave:resolvers';
+import { crudable } from 'meteor/quave:resolvers/resolvers';
 
 import { PlayerDefinition } from './PlayersDefinitions';
 

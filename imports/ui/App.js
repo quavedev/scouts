@@ -3,7 +3,7 @@ import { PlayerDefinition } from '../players/PlayersDefinitions';
 import { Crud } from 'meteor/quave:crud/Crud';
 import { BrowserRouter, Route } from 'react-router-dom';
 
-const Players = () => (
+export const App = () => (
   <BrowserRouter>
     <Route path="/">
       <Crud
@@ -14,4 +14,3 @@ const Players = () => (
     </Route>
   </BrowserRouter>
 );
-export const App = () => <Players />;
