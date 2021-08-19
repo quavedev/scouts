@@ -1,4 +1,9 @@
-body {
-  padding: 10px;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body, html, #react-target {
+  height: 100%;
+  width: 100%;
   font-family: sans-serif;
 }
