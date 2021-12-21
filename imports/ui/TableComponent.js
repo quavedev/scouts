@@ -14,6 +14,7 @@ export const TableComponent = ({
   columnNames,
   rows,
   listActions,
+  crudActions,
   pagination,
 }) => (
   <Card>
@@ -23,7 +24,7 @@ export const TableComponent = ({
         <button
           color="green"
           className="ml-auto font-bold uppercase cursor-pointer"
-          onClick={listActions.goToNewObject}
+          onClick={crudActions.goToNewObject}
         >
           New
         </button>
@@ -49,7 +50,7 @@ export const TableComponent = ({
             <tr
               className="cursor-pointer"
               key={`table-row-${object._id}`}
-              onClick={() => listActions.goToObject(object._id)}
+              onClick={() => crudActions.goToObject(object._id)}
             >
               {values.map((value, index) => (
                 <td
@@ -84,14 +85,14 @@ export const TableComponent = ({
           <PaginationItem
             className="cursor-pointer"
             button
-            onClick={() => listActions.changePagination(pagination.first)}
+            onClick={() => listActions.firstPage()}
             ripple="dark"
           >
             First
           </PaginationItem>
           <PaginationItem
             className="cursor-pointer"
-            onClick={() => listActions.changePagination(pagination.previous)}
+            onClick={() => listActions.previousPage()}
             ripple="dark"
           >
             <Icon name="keyboard_arrow_left" />
@@ -101,7 +102,7 @@ export const TableComponent = ({
           </div>
           <PaginationItem
             className="cursor-pointer"
-            onClick={() => listActions.changePagination(pagination.next)}
+            onClick={() => listActions.nextPage()}
             ripple="dark"
           >
             <Icon name="keyboard_arrow_right" />
@@ -109,7 +110,7 @@ export const TableComponent = ({
           <PaginationItem
             className="cursor-pointer"
             button
-            onClick={() => listActions.changePagination(pagination.last)}
+            onClick={() => listActions.lastPage()}
             ripple="dark"
           >
             Last

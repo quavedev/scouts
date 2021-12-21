@@ -55,9 +55,9 @@ npm-mongo@3.9.1
 ordered-dict@1.1.0
 promise@0.12.0
 quave:collections@1.0.2
-quave:crud@0.0.3
+quave:crud@0.1.0-beta.0
 quave:custom-type-date-time@1.0.1
-quave:definitions@1.0.4
+quave:definitions@1.0.5
 quave:forms@3.0.3
 quave:graphql@1.0.0
 quave:resolvers@1.0.3
